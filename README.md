@@ -5,7 +5,7 @@
 * Double
 * Bool
 
-# Example:
+# Example
 
 ````
 // Example:
