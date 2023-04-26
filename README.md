@@ -41,8 +41,8 @@ class B : A {
 
 
 let a = A()
-a.name = "Cosmo"
-a.name = nil
+a.name = "Cosmo"  // UserDefault.standard store string "Cosmo" for "Module.A.name"
+a.name = nil 
 a.name = "Julis"
 a.age = 15
 a.age = 12
