@@ -4,6 +4,7 @@
 * Int
 * Double
 * Bool
+* TODO - where T : ObjcUserDefault
 
 # Example
 
