@@ -4,14 +4,14 @@
 * Int
 * Double
 * Bool
-* ObjcUserDefault/ObjcUserDefault?
+* ObjcUserDefaults/ObjcUserDefaults?
 
 # Example
 
 ````
 // Example:
 
-class A : ObjcUserDefault {
+class A : ObjcUserDefaults {
 
     @objc dynamic var name: String?
     @objc dynamic var age: Int = 0
@@ -57,7 +57,7 @@ ba.gender = "girl"   // gender = girl (at:"test.B.gender")
 
 --------------------------------------------------------------------------------
 
-class A : ObjcUserDefault {
+class A : ObjcUserDefaults {
     @objc dynamic var age: Int = 0
     @objc dynamic var name: String = ""
     @objc dynamic var title: String?
@@ -77,7 +77,7 @@ class A : ObjcUserDefault {
     }
     
     
-    class A_B : ObjcUserDefault {
+    class A_B : ObjcUserDefaults {
         @objc dynamic var level: Int = 0
         @objc dynamic var height: Double = 0.0
         @objc dynamic var title: String = ""
@@ -98,7 +98,7 @@ class A : ObjcUserDefault {
         
     }
     
-    class A_C : ObjcUserDefault {
+    class A_C : ObjcUserDefaults {
         @objc dynamic var title: String = ""
     }
 }
