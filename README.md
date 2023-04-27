@@ -122,3 +122,9 @@ print("aab:\(a.ab!)")   // aab:level:0, height:0.0, title:, gender:nil
 # Installation
 
 Copy and Paste
+
+# TODO
+
+An object inherited from a class can only be instantiated once
+/
+Throws an exception when using multiple objects to modify the same UserDefaults key
