@@ -52,6 +52,9 @@ b.title = nil       // title = nil (at:"test.B.title")
 b.gender = "girl"   // gender = girl (at:"test.B.gender")
 b.gender = "boy"    // gender = boy (at:"test.B.gender")
 
+let a = b as A
+a.gender = "girl"   // gender = girl (at:"test.B.gender")
+
 --------------------------------------------------------------------------------
 
 class A : ObjcUserDefault {
