@@ -40,17 +40,17 @@ class B : A {
 }
 
 let a = A()
-a.name = "Cosmo"  // UserDefault.standard store string "Cosmo" for "Module.A.name"
-a.name = nil 
-a.name = "Julis"
-a.age = 15
-a.age = 12
+a.name = "Cosmo"    // name = Cosmo (at:"test.A.name")
+a.name = nil        // name = nil (at:"test.A.name")
+a.name = "Julis"    // name = Julis (at:"test.A.name")
+a.age = 15          // age = 15 (at:"test.A.age")
+a.age = 12          // age = 12 (at:"test.A.age")
 
 let b = B()
-b.title = "level 2"
-b.title = nil
-b.gender = "girl"
-b.gender = "boy"
+b.title = "level 2" // title = level 2 (at:"test.B.title")
+b.title = nil       // title = nil (at:"test.B.title")
+b.gender = "girl"   // gender = girl (at:"test.B.gender")
+b.gender = "boy"    // gender = boy (at:"test.B.gender")
 
 --------------------------------------------------------------------------------
 
@@ -101,14 +101,17 @@ class A : ObjcUserDefault {
 }
 
 let a = A()
-a.ab = A.A_B()
-a.ab?.level = 2
-a.ab?.height = 180
-print("aab:\(a.ab!)")
-a.ab = nil
-print("aab:\(String(describing: a.ab))")
-a.ab = A.A_B()
-print("aab:\(a.ab!)")
+
+a.ab = A.A_B()          // ab = Optional(level:0, height:0.0, title:, gender:nil) (at:"test.A.ab")
+a.ab?.level = 2         // level = 2 (at:"test.A.A_B.level")
+a.ab?.height = 180      // height = 180.0 (at:"test.A.A_B.height")
+print("aab:\(a.ab!)")   // aab:level:2, height:180.0, title:, gender:nil
+
+a.ab = nil              // ab = nil (at:"test.A.ab")
+print("aab:\(String(describing: a.ab))") // aab:nil
+
+a.ab = A.A_B()          // ab = Optional(level:0, height:0.0, title:, gender:nil) (at:"test.A.ab")
+print("aab:\(a.ab!)")   // aab:level:0, height:0.0, title:, gender:nil
 
 
 ````
