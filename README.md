@@ -125,6 +125,6 @@ Copy and Paste
 
 # TODO
 
-An object inherited from a class can only be instantiated once
-/
+An object inherited from ObjcUserDefaults can only be instantiated once
+
 Throws an exception when using multiple objects to modify the same UserDefaults key
