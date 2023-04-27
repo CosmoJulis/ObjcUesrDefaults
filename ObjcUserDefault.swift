@@ -2,22 +2,6 @@
 import Foundation
 import Combine
 
-extension UserDefaults {
-    func containsKey(_ key: String) -> Bool {
-        return dictionaryRepresentation().keys.contains(key)
-    }
-}
-
-protocol OptionalProtocol {
-    static func wrappedType() -> Any.Type
-    func wrappedType() -> Any.Type
-}
-
-extension Optional: OptionalProtocol {
-    static func wrappedType() -> Any.Type { return Wrapped.self }
-    func wrappedType() -> Any.Type { return Wrapped.self }
-}
-
 class ObjcUserDefault : NSObject {
     
     var cancellables: [String:Cancellable] = [String:Cancellable]()
@@ -31,9 +15,7 @@ class ObjcUserDefault : NSObject {
         cancellables.forEach{$1.cancel()}
     }
     
-    private func bingPartialKeyPath<T>(_ label: String, _ keyPath: PartialKeyPath<T>) where T : ObjcUserDefault {
-
-        guard let this = self as? T else { return }
+    private func bingPartialKeyPath<T>(_ this: T, _ label: String, _ keyPath: PartialKeyPath<T>) where T : ObjcUserDefault {
 
         if let cancel = cancellables[label] { cancel.cancel() }
 
@@ -130,7 +112,11 @@ class ObjcUserDefault : NSObject {
                 print("\(label) = \(newValue) (at:\"\(storeKey)\")")
             }
         } else {
-            bingPartialKeyPath(label, keyPath)
+            if let this = self as? T {
+                bingPartialKeyPath(this, label, keyPath)
+            } else { // Never run
+                assert(false, "Self do not have this KeyPath: \(keyPath)")
+            }
         }
     }
     
@@ -143,7 +129,7 @@ class ObjcUserDefault : NSObject {
     @discardableResult
     func bind_part<T>(_ this: T, _ send: [String: PartialKeyPath<T>]) -> T where T : ObjcUserDefault {
         for (label,keyPath) in send {
-            bingPartialKeyPath(label, keyPath)
+            bingPartialKeyPath(this, label, keyPath)
         }
         return this
     }
