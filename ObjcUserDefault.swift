@@ -96,7 +96,7 @@ class ObjcUserDefault : NSObject {
             
             if isOptObjcUserDefault && userDefault.containsKey(storeKey) && !cancellables.keys.contains(label) {
                 let dWrappedType = wrappedType as! ObjcUserDefault.Type
-                self.setValue(dWrappedType.init(), forKey: label)
+                setValue(dWrappedType.init(), forKey: label)
             }
             
             cancellables[label] = (self as! T).publisher(for: keyPath).dropFirst().sink() {
