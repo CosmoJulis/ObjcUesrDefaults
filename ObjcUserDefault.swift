@@ -1,3 +1,4 @@
+
 import Foundation
 import Combine
 
@@ -7,80 +8,147 @@ extension UserDefaults {
     }
 }
 
+protocol OptionalProtocol {
+    static func wrappedType() -> Any.Type
+    func wrappedType() -> Any.Type
+}
+
+extension Optional: OptionalProtocol {
+    static func wrappedType() -> Any.Type { return Wrapped.self }
+    func wrappedType() -> Any.Type { return Wrapped.self }
+}
+
 class ObjcUserDefault : NSObject {
     
     var cancellables: [String:Cancellable] = [String:Cancellable]()
 
-    override init() {
+    required override init() {
         super.init()
-        bindKeyPath()
+        bind()
     }
     
     deinit {
         cancellables.forEach{$1.cancel()}
     }
     
-    func bindKeyPath<T>(_ this: T, _ send: [String: PartialKeyPath<T>]) where T : NSObject {
-        let userDefault = UserDefaults.standard
-        let thisPath = String(describing: this).components(separatedBy: ":").first!.replacingOccurrences(of: "<", with: "")
-        for (label,keyPath) in send {
-            if let cancel = cancellables[label] { cancel.cancel() }
-            let fullKey = thisPath + "." + label
-//            print("path \(fullKey)")
+    private func bingPartialKeyPath<T>(_ label: String, _ keyPath: PartialKeyPath<T>) where T : ObjcUserDefault {
 
-            switch keyPath {
-            case let kp as WritableKeyPath<T, String>:
-                if userDefault.containsKey(fullKey) && !cancellables.keys.contains(label) {
-                    this.setValue(userDefault.string(forKey: fullKey) ?? "", forKey: label)
-                }
-                cancellables[label] = this.publisher(for: kp).dropFirst().sink() {
-                    newValue in
-                    userDefault.setValue(newValue, forKey: fullKey)
-//                    print("newValue:\(newValue)")
-                }
-            case let okp as WritableKeyPath<T, String?>:
-                if userDefault.containsKey(fullKey) && !cancellables.keys.contains(label) {
-                    this.setValue(userDefault.string(forKey: fullKey), forKey: label)
-                }
-                cancellables[label] = this.publisher(for: okp).dropFirst().sink() {
-                    newValue in
-                    userDefault.setValue(newValue, forKey: fullKey)
-//                    print("newValue:\(newValue ?? "nil")")
-                }
-            case let kp as WritableKeyPath<T, Int>:
-                if userDefault.containsKey(fullKey) && !cancellables.keys.contains(label) {
-                    this.setValue(userDefault.integer(forKey: fullKey), forKey: label)
-                }
-                cancellables[label] = this.publisher(for: kp).dropFirst().sink() {
-                    newValue in
-                    userDefault.setValue(newValue, forKey: fullKey)
-//                    print("newValue:\(newValue)")
-                }
-            case let kp as WritableKeyPath<T, Double>:
-                if userDefault.containsKey(fullKey) && !cancellables.keys.contains(label) {
-                    this.setValue(userDefault.double(forKey: fullKey), forKey: label)
-                }
-                cancellables[label] = this.publisher(for: kp).dropFirst().sink() {
-                    newValue in
-                    userDefault.setValue(newValue, forKey: fullKey)
-//                    print("newValue:\(newValue)")
-                }
-            case let kp as WritableKeyPath<T, Bool>:
-                if userDefault.containsKey(fullKey) && !cancellables.keys.contains(label) {
-                    this.setValue(userDefault.bool(forKey: fullKey), forKey: label)
-                }
-                cancellables[label] = this.publisher(for: kp).dropFirst().sink() {
-                    newValue in
-                    userDefault.setValue(newValue, forKey: fullKey)
-//                    print("newValue:\(newValue)")
-                }
-            default:
-                assert(false, "Has not implement this Type: \(keyPath)")
+        guard let this = self as? T else { return }
+
+        if let cancel = cancellables[label] { cancel.cancel() }
+
+        let userDefault = UserDefaults.standard
+        let storeKey = String(reflecting: type(of: this)) + "." + label
+        
+//        print("storeKey \(storeKey)")
+//        print("keyPath \(type(of:keyPath))")
+        
+        switch keyPath {
+        case let kp as KeyPath<T, String>:
+            if userDefault.containsKey(storeKey) && !cancellables.keys.contains(label) {
+                this.setValue(userDefault.string(forKey: storeKey) ?? "", forKey: label)
             }
+            cancellables[label] = this.publisher(for: kp).dropFirst().sink() {
+                newValue in
+                userDefault.setValue(newValue, forKey: storeKey)
+                print("\(label) = \(newValue) (at:\"\(storeKey)\")")
+            }
+        case let kp as KeyPath<T, String?>:
+            if userDefault.containsKey(storeKey) && !cancellables.keys.contains(label) {
+                this.setValue(userDefault.string(forKey: storeKey), forKey: label)
+            }
+            cancellables[label] = this.publisher(for: kp).dropFirst().sink() {
+                newValue in
+                userDefault.setValue(newValue, forKey: storeKey)
+                print("\(label) = \(newValue ?? "nil") (at:\"\(storeKey)\")")
+            }
+        case let kp as KeyPath<T, Int>:
+            if userDefault.containsKey(storeKey) && !cancellables.keys.contains(label) {
+                this.setValue(userDefault.integer(forKey: storeKey), forKey: label)
+            }
+            cancellables[label] = this.publisher(for: kp).dropFirst().sink() {
+                newValue in
+                userDefault.setValue(newValue, forKey: storeKey)
+                print("\(label) = \(newValue) (at:\"\(storeKey)\")")
+            }
+        case let kp as KeyPath<T, Double>:
+            if userDefault.containsKey(storeKey) && !cancellables.keys.contains(label) {
+                this.setValue(userDefault.double(forKey: storeKey), forKey: label)
+            }
+            cancellables[label] = this.publisher(for: kp).dropFirst().sink() {
+                newValue in
+                userDefault.setValue(newValue, forKey: storeKey)
+                print("\(label) = \(newValue) (at:\"\(storeKey)\")")
+            }
+        case let kp as KeyPath<T, Bool>:
+            if userDefault.containsKey(storeKey) && !cancellables.keys.contains(label) {
+                this.setValue(userDefault.bool(forKey: storeKey), forKey: label)
+            }
+            cancellables[label] = this.publisher(for: kp).dropFirst().sink() {
+                newValue in
+                userDefault.setValue(newValue, forKey: storeKey)
+                print("\(label) = \(newValue) (at:\"\(storeKey)\")")
+            }
+        default:
+            assert(false, "Has not implement this Type: \(keyPath)")
         }
     }
     
-    func bindKeyPath() {
+    private func bingKeyPath<T, D>(_ label: String, _ keyPath: KeyPath<T, D>) where T : ObjcUserDefault {
+
+        let wrappedType = (D.self as? OptionalProtocol.Type)?.wrappedType()
+        let isOptObjcUserDefault = wrappedType is ObjcUserDefault.Type
+        
+        if D.self is ObjcUserDefault.Type || isOptObjcUserDefault
+             {
+            
+            if let cancel = cancellables[label] { cancel.cancel() }
+            
+            let userDefault = UserDefaults.standard
+            let fullPath = String(reflecting: isOptObjcUserDefault ? wrappedType!.self : D.self)
+            let storeKey = String(reflecting: type(of: self)) + "." + label
+            
+//            print("storeKey \(storeKey)")
+//            print("fullPath \(fullPath)")
+//            print("keyPath \(type(of:keyPath))")
+            
+            if isOptObjcUserDefault && userDefault.containsKey(storeKey) && !cancellables.keys.contains(label) {
+                let dWrappedType = wrappedType as! ObjcUserDefault.Type
+                self.setValue(dWrappedType.init(), forKey: label)
+            }
+            
+            cancellables[label] = (self as! T).publisher(for: keyPath).dropFirst().sink() {
+                newValue in
+                if newValue is ObjcUserDefault || (newValue as? OptionalProtocol)?.wrappedType() is ObjcUserDefault {
+                    userDefault.setValue("<" + fullPath + ">", forKey: storeKey)
+                } else {
+                    userDefault.setValue(nil, forKey: storeKey)
+                    userDefault.dictionaryRepresentation().keys.filter{ $0.hasPrefix(fullPath + ".") }.forEach{
+                        userDefault.setValue(nil, forKey: $0)
+                    }
+                }
+                print("\(label) = \(newValue) (at:\"\(storeKey)\")")
+            }
+        } else {
+            bingPartialKeyPath(label, keyPath)
+        }
+    }
+    
+    @discardableResult
+    func bind<T, D>(_ label: String, _ keyPath: KeyPath<T, D>) -> T where T : ObjcUserDefault {
+        bingKeyPath(label, keyPath)
+        return self as! T
+    }
+    
+    @discardableResult
+    func bind_part<T>(_ this: T, _ send: [String: PartialKeyPath<T>]) -> T where T : ObjcUserDefault {
+        for (label,keyPath) in send {
+            bingPartialKeyPath(label, keyPath)
+        }
+        return this
+    }
+
+    func bind() {
         // Override it
     }
 }
