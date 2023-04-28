@@ -2,7 +2,7 @@
 import Foundation
 import Combine
 
-class ObjcUserDefaults : NSObject {
+class ObjcSharedObject : NSObject {
     
     var cancellables: [String:Cancellable] = [String:Cancellable]()
 
@@ -15,7 +15,7 @@ class ObjcUserDefaults : NSObject {
         cancellables.forEach{$1.cancel()}
     }
     
-    private func bingPartialKeyPath<T>(_ this: T, _ label: String, _ keyPath: PartialKeyPath<T>) where T : ObjcUserDefaults {
+    private func bingPartialKeyPath<T>(_ this: T, _ label: String, _ keyPath: PartialKeyPath<T>) where T : ObjcSharedObject {
 
         if let cancel = cancellables[label] { cancel.cancel() }
 
@@ -76,32 +76,32 @@ class ObjcUserDefaults : NSObject {
         }
     }
     
-    private func bingKeyPath<T, D>(_ label: String, _ keyPath: KeyPath<T, D>) where T : ObjcUserDefaults {
+    private func bingKeyPath<T, D>(_ label: String, _ keyPath: KeyPath<T, D>) where T : ObjcSharedObject {
 
         let wrappedType = (D.self as? OptionalProtocol.Type)?.wrappedType()
-        let isOptObjcUserDefaults = wrappedType is ObjcUserDefaults.Type
+        let isOptObjcSharedObject = wrappedType is ObjcSharedObject.Type
         
-        if D.self is ObjcUserDefaults.Type || isOptObjcUserDefaults
+        if D.self is ObjcSharedObject.Type || isOptObjcSharedObject
              {
             
             if let cancel = cancellables[label] { cancel.cancel() }
             
             let userDefault = UserDefaults.standard
-            let fullPath = String(reflecting: isOptObjcUserDefaults ? wrappedType!.self : D.self)
+            let fullPath = String(reflecting: isOptObjcSharedObject ? wrappedType!.self : D.self)
             let storeKey = String(reflecting: type(of: self)) + "." + label
             
 //            print("storeKey \(storeKey)")
 //            print("fullPath \(fullPath)")
 //            print("keyPath \(type(of:keyPath))")
             
-            if isOptObjcUserDefaults && userDefault.containsKey(storeKey) && !cancellables.keys.contains(label) {
-                let dWrappedType = wrappedType as! ObjcUserDefaults.Type
+            if isOptObjcSharedObject && userDefault.containsKey(storeKey) && !cancellables.keys.contains(label) {
+                let dWrappedType = wrappedType as! ObjcSharedObject.Type
                 setValue(dWrappedType.init(), forKey: label)
             }
             
             cancellables[label] = (self as! T).publisher(for: keyPath).dropFirst().sink() {
                 newValue in
-                if newValue is ObjcUserDefaults || (newValue as? OptionalProtocol)?.wrappedType() is ObjcUserDefaults {
+                if newValue is ObjcSharedObject || (newValue as? OptionalProtocol)?.wrappedType() is ObjcSharedObject {
                     userDefault.setValue("<" + fullPath + ">", forKey: storeKey)
                 } else {
                     userDefault.setValue(nil, forKey: storeKey)
@@ -121,13 +121,13 @@ class ObjcUserDefaults : NSObject {
     }
     
     @discardableResult
-    func bind<T, D>(_ label: String, _ keyPath: KeyPath<T, D>) -> T where T : ObjcUserDefaults {
+    func bind<T, D>(_ label: String, _ keyPath: KeyPath<T, D>) -> T where T : ObjcSharedObject {
         bingKeyPath(label, keyPath)
         return self as! T
     }
     
     @discardableResult
-    func bind_part<T>(_ this: T, _ send: [String: PartialKeyPath<T>]) -> T where T : ObjcUserDefaults {
+    func bind_part<T>(_ this: T, _ send: [String: PartialKeyPath<T>]) -> T where T : ObjcSharedObject {
         for (label,keyPath) in send {
             bingPartialKeyPath(this, label, keyPath)
         }

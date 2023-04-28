@@ -4,14 +4,14 @@
 * Int
 * Double
 * Bool
-* ObjcUserDefaults/ObjcUserDefaults?
+* ObjcSharedObject/ObjcSharedObject?
 
 # Example
 
 ````
 // Example:
 
-class A : ObjcUserDefaults {
+class A : ObjcSharedObject {
 
     @objc dynamic var name: String?
     @objc dynamic var age: Int = 0
@@ -57,7 +57,7 @@ ba.gender = "girl"   // gender = girl (at:"test.B.gender")
 
 --------------------------------------------------------------------------------
 
-class A : ObjcUserDefaults {
+class A : ObjcSharedObject {
     @objc dynamic var age: Int = 0
     @objc dynamic var name: String = ""
     @objc dynamic var title: String?
@@ -77,7 +77,7 @@ class A : ObjcUserDefaults {
     }
     
     
-    class A_B : ObjcUserDefaults {
+    class A_B : ObjcSharedObject {
         @objc dynamic var level: Int = 0
         @objc dynamic var height: Double = 0.0
         @objc dynamic var title: String = ""
@@ -98,7 +98,7 @@ class A : ObjcUserDefaults {
         
     }
     
-    class A_C : ObjcUserDefaults {
+    class A_C : ObjcSharedObject {
         @objc dynamic var title: String = ""
     }
 }
@@ -116,6 +116,8 @@ print("aab:\(String(describing: a.ab))") // aab:nil
 a.ab = A.A_B()          // ab = Optional(level:0, height:0.0, title:, gender:nil) (at:"test.A.ab")
 print("aab:\(a.ab!)")   // aab:level:0, height:0.0, title:, gender:nil
 
+--------------------------------------------------------------------------------
+
 
 ````
 
@@ -125,6 +127,6 @@ Copy and Paste
 
 # TODO
 
-An object inherited from ObjcUserDefaults can only be instantiated once
+An object inherited from ObjcSharedObject can only be instantiated once
 
 Throws an exception when using multiple objects to modify the same UserDefaults key
