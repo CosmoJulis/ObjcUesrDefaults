@@ -133,7 +133,8 @@ var a: A? = A()
 a?.name = "Cosmo"
 
 let a2 = A()
-a2.name = "Julis"       // Assertion failed: Deinit the previous instance of the class test.A, then create a new instance with the updated key value.
+a2.name = "Julis"       // Assertion failed: Deinit the previous instance of the class test.A, 
+                        // then create a new instance with the updated key value.
 
 // a2.name = "Julis"
 a = nil
