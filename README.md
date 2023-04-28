@@ -18,7 +18,7 @@ class A : ObjcSharedObject {
     @objc dynamic var gender: String?
     
     override func bind() {
-        bind_part(self, [
+        bindPart(self, [
             "name": \.name,
             "age": \.age
         ])
@@ -31,7 +31,7 @@ class B : A {
     
     override func bind() {
         super.bind()
-        bind_part(self, [
+        bindPart(self, [
             "age": \.age,
             "title": \.title,
             "gender": \.gender
@@ -66,7 +66,7 @@ class A : ObjcSharedObject {
     @objc dynamic var ac: A_C = A_C()
         
     override func bind() {
-        bind_part(self, [
+        bindPart(self, [
             "age": \.age,
             "name": \.name,
             "title": \.title
@@ -84,7 +84,7 @@ class A : ObjcSharedObject {
         @objc dynamic var gender: String?
         
         override func bind() {
-            bind_part(self, [
+            bindPart(self, [
                 "level":\.level,
                 "height":\.height,
                 "title":\.title,
@@ -118,6 +118,26 @@ print("aab:\(a.ab!)")   // aab:level:0, height:0.0, title:, gender:nil
 
 --------------------------------------------------------------------------------
 
+class A : ObjcSharedObject {
+
+    @objc dynamic var name: String?
+    
+    override func bind() {
+        bindPart(self, [
+            "name": \.name,
+        ])
+    }
+}
+
+var a: A? = A()
+a?.name = "Cosmo"
+
+let a2 = A()
+a2.name = "Julis"       // Assertion failed: Deinit the previous instance of the class test.A, then create a new instance with the updated key value.
+
+// a2.name = "Julis"
+a = nil
+a2.name = "Julis"       // name = Julis (at:"test.A.name")
 
 ````
 
@@ -126,7 +146,5 @@ print("aab:\(a.ab!)")   // aab:level:0, height:0.0, title:, gender:nil
 Copy and Paste
 
 # TODO
-
-Throws an exception when using multiple objects to modify the same UserDefaults key
 
 Threadsafe
