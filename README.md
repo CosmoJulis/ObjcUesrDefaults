@@ -127,6 +127,6 @@ Copy and Paste
 
 # TODO
 
-An object inherited from ObjcSharedObject can only be instantiated once
-
 Throws an exception when using multiple objects to modify the same UserDefaults key
+
+Threadsafe

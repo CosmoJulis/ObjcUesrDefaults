@@ -2,6 +2,22 @@
 import Foundation
 import Combine
 
+protocol OptionalProtocol {
+    static func wrappedType() -> Any.Type
+    func wrappedType() -> Any.Type
+}
+
+extension Optional: OptionalProtocol {
+    static func wrappedType() -> Any.Type { return Wrapped.self }
+    func wrappedType() -> Any.Type { return Wrapped.self }
+}
+
+extension UserDefaults {
+    func containsKey(_ key: String) -> Bool {
+        return dictionaryRepresentation().keys.contains(key)
+    }
+}
+
 class ObjcSharedObject : NSObject {
     
     var cancellables: [String:Cancellable] = [String:Cancellable]()
