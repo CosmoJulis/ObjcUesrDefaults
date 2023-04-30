@@ -73,9 +73,9 @@ open class ObjcSharedObject : NSObject {
     private func bingKeyPath<T, D>(_ label: String, _ keyPath: KeyPath<T, D>) where T : ObjcSharedObject {
 
         let wrappedType = (D.self as? OptionalProtocol.Type)?.wrappedType()
-        let isOptObjcSharedObject = wrappedType is Self.Type
+        let isOptObjcSharedObject = wrappedType is ObjcSharedObject.Type
         
-        if D.self is Self.Type || isOptObjcSharedObject
+        if D.self is ObjcSharedObject.Type || isOptObjcSharedObject
              {
             
             if let cancel = cancellables[label] { cancel.cancel() }
@@ -89,7 +89,7 @@ open class ObjcSharedObject : NSObject {
 //            print("keyPath \(type(of:keyPath))")
             
             if isOptObjcSharedObject && userDefault.containsKey(storeKey) && !cancellables.keys.contains(label) {
-                let dWrappedType = wrappedType as! Self.Type
+                let dWrappedType = wrappedType as! ObjcSharedObject.Type
                 setValue(dWrappedType.init(), forKey: label)
             }
             
