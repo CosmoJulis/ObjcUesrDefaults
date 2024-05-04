@@ -1,6 +1,7 @@
 # Supported Types
 
 * String/String?
+* Data/Data?
 * Int
 * Double
 * Bool

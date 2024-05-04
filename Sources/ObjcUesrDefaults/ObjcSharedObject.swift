@@ -146,6 +146,26 @@ open class ObjcSharedObject : NSObject {
                 userDefault.setValue(newValue, forKey: storeKey)
                 print("\(label) = \(newValue ?? "nil") (at:\"\(storeKey)\")")
             }
+        case let kp as KeyPath<T, Data>:
+            if userDefault.containsKey(storeKey) && !cancellables.keys.contains(label) {
+                this.setValue(userDefault.data(forKey: storeKey) ?? "", forKey: label)
+            }
+            cancellables[label] = this.publisher(for: kp).dropFirst().sink() {
+                [weak self] newValue in
+                self?.assertNotDirty()
+                userDefault.setValue(newValue, forKey: storeKey)
+                print("\(label) = \(newValue) (at:\"\(storeKey)\")")
+            }
+        case let kp as KeyPath<T, Data?>:
+            if userDefault.containsKey(storeKey) && !cancellables.keys.contains(label) {
+                this.setValue(userDefault.data(forKey: storeKey), forKey: label)
+            }
+            cancellables[label] = this.publisher(for: kp).dropFirst().sink() {
+                [weak self] newValue in
+                self?.assertNotDirty()
+                userDefault.setValue(newValue, forKey: storeKey)
+                print("\(label) = \(String(describing: newValue)) (at:\"\(storeKey)\")")
+            }
         case let kp as KeyPath<T, Int>:
             if userDefault.containsKey(storeKey) && !cancellables.keys.contains(label) {
                 this.setValue(userDefault.integer(forKey: storeKey), forKey: label)
