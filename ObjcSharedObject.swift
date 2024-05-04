@@ -36,13 +36,13 @@ open class ObjcSharedObject : NSObject {
     }
     
     @discardableResult
-    func bind<T, D>(_ label: String, _ keyPath: KeyPath<T, D>) -> T where T : ObjcSharedObject {
+    open func bind<T, D>(_ label: String, _ keyPath: KeyPath<T, D>) -> T where T : ObjcSharedObject {
         bingKeyPath(label, keyPath)
         return self as! T
     }
     
     @discardableResult
-    func bindPart<T>(_ this: T, _ part: [String: PartialKeyPath<T>]) -> T where T : ObjcSharedObject {
+    open func bindPart<T>(_ this: T, _ part: [String: PartialKeyPath<T>]) -> T where T : ObjcSharedObject {
         for (label,keyPath) in part {
             bingPartialKeyPath(this, label, keyPath)
         }
@@ -50,23 +50,23 @@ open class ObjcSharedObject : NSObject {
     }
     
     @discardableResult
-    func cancelBind<T, D>(_ keyPath: KeyPath<T, D>) -> T where T : ObjcSharedObject {
+    open func cancelBind<T, D>(_ keyPath: KeyPath<T, D>) -> T where T : ObjcSharedObject {
         return cancelBind(NSExpression(forKeyPath: keyPath).keyPath) as! T
     }
     
     @discardableResult
-    func cancelBinds(_ labels: [String]) -> Self {
+    open func cancelBinds(_ labels: [String]) -> Self {
         labels.forEach { cancelBind($0) }
         return self
     }
     
     @discardableResult
-    func cancelBind(_ label: String) -> Self {
+    open func cancelBind(_ label: String) -> Self {
         cancellables[label]?.cancel()
         return self
     }
     
-    func cancelAllBinds() {
+    open func cancelAllBinds() {
         cancellables.forEach{ $1.cancel() }
     }
     
