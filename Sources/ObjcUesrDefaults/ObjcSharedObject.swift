@@ -24,7 +24,7 @@ open class ObjcSharedObject : NSObject {
         // Override it
     }
     
-    required override init() {
+    required public override init() {
         super.init()
         appendClass()
         bind()
